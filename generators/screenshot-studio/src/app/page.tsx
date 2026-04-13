@@ -416,16 +416,38 @@ function SlideCanvas({
   const fw = phoneW(cW, cH) * 100;
 
   if (slide.variant === "hero") {
+    const showAppIcon = slide.id === "hero";
     return (
       <TechBackdrop theme={theme}>
         <div
           style={{
             position: "absolute",
-            top: cW * 0.1,
+            top: cW * 0.08,
             left: cW * 0.08,
             right: cW * 0.08,
           }}
         >
+          {showAppIcon ? (
+            <div style={{ marginBottom: cW * 0.045 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img("/app-icon.png")}
+                alt=""
+                width={Math.round(cW * 0.2)}
+                height={Math.round(cW * 0.2)}
+                style={{
+                  display: "block",
+                  borderRadius: cW * 0.046,
+                  boxShadow: `
+                    0 16px 48px rgba(0,0,0,0.55),
+                    0 0 0 1px rgba(255,255,255,0.14),
+                    0 0 72px ${theme.accent}44
+                  `,
+                }}
+                draggable={false}
+              />
+            </div>
+          ) : null}
           <Caption cW={cW} label={slide.label} headline={slide.headline} theme={theme} />
         </div>
         <Phone
@@ -620,9 +642,10 @@ export default function ScreenshotsPage() {
       </div>
 
       <p style={{ padding: "16px 20px", fontSize: 13, color: "#64748b", maxWidth: 720 }}>
-        Copy follows allowed positioning from <code>docs/GAMETIME.md</code> (no metrics, no &quot;350k&quot;
-        unless your onboarding still uses it). Replace files in <code>public/screenshots/</code> with real
-        Simulator captures (6.1&quot; recommended). Replace <code>public/app-icon.png</code> with your icon.
+        Copy follows <code>docs/GAMETIME.md</code>. Replace <code>public/screenshots/*.png</code> with real
+        Simulator captures (6.1&quot;). <code>public/app-icon.png</code> appears on <strong>slide 01 (hero)</strong>{" "}
+        above the headline. If assets look missing: ensure files are <strong>fully downloaded</strong> (not
+        iCloud “cloud only”) so Next.js can read them from disk.
       </p>
 
       <div

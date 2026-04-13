@@ -19,7 +19,7 @@ Open [http://localhost:3000](http://localhost:3000). Choose export size, then **
 | File | Replace with |
 |------|----------------|
 | `public/screenshots/*.png` | Real **6.1"** Simulator captures (see upstream skill README). |
-| `public/app-icon.png` | Your App Store icon. |
+| `public/app-icon.png` | Your App Store icon — shown on **slide 01 (hero)** above the headline. Must be **on disk** (download from iCloud if Finder shows a cloud badge). |
 
 ## Build
 
