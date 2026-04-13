@@ -21,7 +21,7 @@ function phoneW(cW: number, cH: number, clamp = 0.84) {
 }
 
 type SlideId =
-  | "hero"
+  | "badges"
   | "now"
   | "library"
   | "discover"
@@ -38,7 +38,7 @@ type Theme = {
 };
 
 const SLIDE_THEMES: Record<SlideId, Theme> = {
-  hero: {
+  badges: {
     fg: "#f8fafc",
     muted: "#94a3b8",
     gradient:
@@ -94,7 +94,7 @@ function themeFor(id: SlideId): Theme {
 
 const IMAGE_PATHS = [
   "/app-icon.png",
-  "/screenshots/home.png",
+  "/screenshots/badges.png",
   "/screenshots/now.png",
   "/screenshots/library.png",
   "/screenshots/discover.png",
@@ -271,6 +271,39 @@ function Phone({
   );
 }
 
+/** Same position on every slide: top-right “stamp” so it never fights the headline. */
+function AppIconMark({ cW, accent }: { cW: number; accent: string }) {
+  const s = Math.round(cW * 0.12);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: cW * 0.052,
+        right: cW * 0.06,
+        zIndex: 5,
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={img("/app-icon.png")}
+        alt=""
+        width={s}
+        height={s}
+        style={{
+          display: "block",
+          borderRadius: cW * 0.028,
+          boxShadow: `
+            0 10px 36px rgba(0,0,0,0.45),
+            0 0 0 1px rgba(255,255,255,0.12),
+            0 0 48px ${accent}38
+          `,
+        }}
+        draggable={false}
+      />
+    </div>
+  );
+}
+
 function Caption({
   cW,
   label,
@@ -324,16 +357,16 @@ type SlideDef = {
 
 const SLIDES: SlideDef[] = [
   {
-    id: "hero",
-    label: "GAMETIME",
+    id: "badges",
+    label: "BADGES",
     headline: (
       <>
-        Your games,
+        Milestones you
         <br />
-        one home.
+        can wear.
       </>
     ),
-    screenshot: "/screenshots/home.png",
+    screenshot: "/screenshots/badges.png",
     variant: "hero",
   },
   {
@@ -416,38 +449,19 @@ function SlideCanvas({
   const fw = phoneW(cW, cH) * 100;
 
   if (slide.variant === "hero") {
-    const showAppIcon = slide.id === "hero";
+    /** Tighter headline↔device gap: less bottom peek + slightly wider phone than generic phoneW. */
+    const fwHero = Math.min(0.9, phoneW(cW, cH) * 1.07) * 100;
     return (
       <TechBackdrop theme={theme}>
+        <AppIconMark cW={cW} accent={theme.accent} />
         <div
           style={{
             position: "absolute",
-            top: cW * 0.08,
+            top: cW * 0.085,
             left: cW * 0.08,
             right: cW * 0.08,
           }}
         >
-          {showAppIcon ? (
-            <div style={{ marginBottom: cW * 0.045 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={img("/app-icon.png")}
-                alt=""
-                width={Math.round(cW * 0.2)}
-                height={Math.round(cW * 0.2)}
-                style={{
-                  display: "block",
-                  borderRadius: cW * 0.046,
-                  boxShadow: `
-                    0 16px 48px rgba(0,0,0,0.55),
-                    0 0 0 1px rgba(255,255,255,0.14),
-                    0 0 72px ${theme.accent}44
-                  `,
-                }}
-                draggable={false}
-              />
-            </div>
-          ) : null}
           <Caption cW={cW} label={slide.label} headline={slide.headline} theme={theme} />
         </div>
         <Phone
@@ -458,8 +472,8 @@ function SlideCanvas({
             position: "absolute",
             bottom: 0,
             left: "50%",
-            width: `${fw}%`,
-            transform: "translateX(-50%) translateY(11%)",
+            width: `${fwHero}%`,
+            transform: "translateX(-50%) translateY(3%)",
           }}
         />
       </TechBackdrop>
@@ -469,6 +483,7 @@ function SlideCanvas({
   if (slide.variant === "feature-a") {
     return (
       <TechBackdrop theme={theme}>
+        <AppIconMark cW={cW} accent={theme.accent} />
         <div
           style={{
             position: "absolute",
@@ -497,6 +512,7 @@ function SlideCanvas({
 
   return (
     <TechBackdrop theme={theme}>
+      <AppIconMark cW={cW} accent={theme.accent} />
       <div
         style={{
           position: "absolute",
@@ -643,8 +659,7 @@ export default function ScreenshotsPage() {
 
       <p style={{ padding: "16px 20px", fontSize: 13, color: "#64748b", maxWidth: 720 }}>
         Copy follows <code>docs/GAMETIME.md</code>. Replace <code>public/screenshots/*.png</code> with real
-        Simulator captures (6.1&quot;). <code>public/app-icon.png</code> appears on <strong>slide 01 (hero)</strong>{" "}
-        above the headline. If assets look missing: ensure files are <strong>fully downloaded</strong> (not
+        Simulator captures (6.1&quot;).         <code>public/app-icon.png</code> appears on <strong>every slide</strong> (top-right). If assets look missing: ensure files are <strong>fully downloaded</strong> (not
         iCloud “cloud only”) so Next.js can read them from disk.
       </p>
 
