@@ -1,16 +1,18 @@
 # App Store screenshot generator — wired into this repo
 
-This workspace includes **[ParthJadhav/app-store-screenshots](https://github.com/ParthJadhav/app-store-screenshots)** as a **git submodule** at **`generators/app-store-screenshots/`** (skill source + docs). Use it with **Cursor** to scaffold a **Next.js** project that exports **framed, ad-style PNGs** for the App Store—and you can **reuse those same PNGs** for Buffer (host a public URL or upload manually). See also **`docs/SOCIAL_IMAGE_AUTOMATION.md`** (Approach A2).
+This workspace includes **[ParthJadhav/app-store-screenshots](https://github.com/ParthJadhav/app-store-screenshots)** as a **git submodule** at `**generators/app-store-screenshots/`** (skill source + docs). Use it with **Cursor** to scaffold a **Next.js** project that exports **framed, ad-style PNGs** for the App Store—and you can **reuse those same PNGs** for Buffer (host a public URL or upload manually). See also `**docs/SOCIAL_IMAGE_AUTOMATION.md`** (Approach A2).
 
 ---
 
 ## What lives where
 
-| Path | Purpose |
-|------|---------|
-| **`generators/app-store-screenshots/`** | Upstream **skill** (MIT). Read `README.md` inside for install and prompts. Update with **`git submodule update --remote`**. |
-| **`generators/screenshot-studio/`** | **Your** generated Next.js app should live **here** (create when you scaffold—see below). Not committed until you add files—keeps the marketing repo clean until you’re ready. |
-| **`content/media/renders/`** | Drop **exported PNGs** here for Git hosting + Buffer raw URLs (or use another host). |
+
+| Path                                    | Purpose                                                                                                                                                                        |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `**generators/app-store-screenshots/**` | Upstream **skill** (MIT). Read `README.md` inside for install and prompts. Update with `**git submodule update --remote`**.                                                    |
+| `generators/screenshot-studio/`     | **Next.js screenshot app** (scaffolded). Run `npm run dev` inside; see `generators/screenshot-studio/README.md`. |
+| `**content/media/renders/`**            | Drop **exported PNGs** here for Git hosting + Buffer raw URLs (or use another host).                                                                                           |
+
 
 ---
 
@@ -38,20 +40,19 @@ npx skills add ./generators/app-store-screenshots
 
 ---
 
-## Scaffold the Next.js generator (in this monorepo)
+## Run the Next.js generator (in this monorepo)
 
-1. In Cursor, open the **AutoMarketing** folder (this repo).
-2. Ask the agent something like:  
-   **“Build App Store screenshots for GameTime using the app-store-screenshots skill. Scaffold the Next.js project under `generators/screenshot-studio/`. Align copy with `docs/GAMETIME.md` allowed claims.”**
-3. If the skill prefers an **empty** folder, create it first:
+**Status:** `generators/screenshot-studio/` is a working **Next.js** + **html-to-image** app with **six** GameTime slides; copy follows **`docs/GAMETIME.md`** (no fake metrics, no “350k” line).
 
 ```bash
-mkdir -p generators/screenshot-studio
+cd generators/screenshot-studio
+npm install
+npm run dev
 ```
 
-4. Add **`app-icon.png`**, **`public/screenshots/`** captures (6.1" Simulator per upstream README), then run the dev server from **`generators/screenshot-studio/`** as the skill instructs (`npm run dev` / `pnpm dev`).
+Open [http://localhost:3000](http://localhost:3000). Replace **`public/screenshots/*.png`** with real **6.1"** Simulator captures and **`public/app-icon.png`** with your icon. Use **Export all PNGs**, then copy files to **`content/media/renders/`**.
 
-5. **Export PNGs** from the browser UI, then copy into **`content/media/renders/`** (and commit when happy).
+To **re-scaffold** from the upstream skill only, install the skill (`npx skills add …`) and let Cursor regenerate—or edit `src/app/page.tsx` in place.
 
 ---
 
@@ -60,7 +61,7 @@ mkdir -p generators/screenshot-studio
 1. **Public URL:** Push `content/media/renders/*.png` to **this** GitHub repo (or another public bucket). Use **raw** URLs in Buffer’s API (`docs/BUFFER_AUTOMATION.md`).
 2. **Manual:** Upload the same files in the Buffer composer—no URL needed.
 
-**Claims:** All on-image copy must still match **`docs/GAMETIME.md`**.
+**Claims:** All on-image copy must still match `**docs/GAMETIME.md`**.
 
 ---
 

@@ -1,10 +1,31 @@
-# Screenshot studio (Next.js — scaffold here)
+# GameTime screenshot studio
 
-This folder is **intentionally empty** until you generate the app.
+Next.js **App Store** screenshot generator (iPhone portrait). Headlines align with **`docs/GAMETIME.md`** allowed claims (no fabricated metrics).
 
-1. Install the skill: see **`docs/APP_STORE_SCREENSHOTS.md`**.
-2. In Cursor, ask to **scaffold** the **app-store-screenshots** Next.js project **in this directory** (`generators/screenshot-studio/`).
-3. Add **`public/screenshots/`** (your Simulator captures) and **`public/app-icon.png`** per the skill README.
-4. Run the dev server from **this** folder and export PNGs → copy to **`../../content/media/renders/`** for Buffer / GitHub raw links.
+## Run locally
 
-**Note:** You may add `generators/screenshot-studio/` to **`.gitignore`** if the generated app is large and you prefer not to commit it—otherwise commit for reproducibility.
+```bash
+cd generators/screenshot-studio
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). Choose export size, then **Export all PNGs**.
+
+## Replace placeholders
+
+| File | Replace with |
+|------|----------------|
+| `public/screenshots/*.png` | Real **6.1"** Simulator captures (see upstream skill README). |
+| `public/app-icon.png` | Your App Store icon. |
+
+## Build
+
+```bash
+npm run build
+npm start
+```
+
+## Outputs
+
+Downloads are named `01-hero-en-1320x2868.png`, etc. Copy finals to **`../../content/media/renders/`** for Buffer / GitHub raw URLs (`docs/BUFFER_AUTOMATION.md`).
