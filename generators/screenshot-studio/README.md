@@ -2,6 +2,8 @@
 
 Next.js **App Store** screenshot generator (iPhone portrait). Headlines align with **`docs/GAMETIME.md`** allowed claims (no fabricated metrics).
 
+**Look & feel:** Tech / video games / modern — each slide uses its own **multi-stop gradient**, a subtle **grid**, soft **glow orbs**, and a bottom **vignette**. Edit palettes in `src/app/page.tsx` (`SLIDE_THEMES`).
+
 ## Run locally
 
 ```bash

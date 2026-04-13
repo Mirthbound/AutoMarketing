@@ -20,19 +20,77 @@ function phoneW(cW: number, cH: number, clamp = 0.84) {
   return Math.min(clamp, 0.72 * (cH / cW) * MK_RATIO);
 }
 
+type SlideId =
+  | "hero"
+  | "now"
+  | "library"
+  | "discover"
+  | "stats"
+  | "wrapped";
+
+/** Tech / video games / modern — per-slide gradients + shared typography tokens */
 type Theme = {
-  bg: string;
   fg: string;
-  accent: string;
   muted: string;
+  gradient: string;
+  accent: string;
+  glow: string;
 };
 
-const THEME: Theme = {
-  bg: "linear-gradient(165deg, #0b1020 0%, #1e1b4b 45%, #0f172a 100%)",
-  fg: "#f8fafc",
-  accent: "#a78bfa",
-  muted: "#94a3b8",
+const SLIDE_THEMES: Record<SlideId, Theme> = {
+  hero: {
+    fg: "#f8fafc",
+    muted: "#94a3b8",
+    gradient:
+      "linear-gradient(168deg, #020617 0%, #0f172a 22%, #312e81 55%, #0e7490 100%)",
+    accent: "#67e8f9",
+    glow: "rgba(34, 211, 238, 0.55)",
+  },
+  now: {
+    fg: "#f8fafc",
+    muted: "#94a3b8",
+    gradient:
+      "linear-gradient(175deg, #020617 0%, #134e4a 35%, #1e40af 92%)",
+    accent: "#2dd4bf",
+    glow: "rgba(45, 212, 191, 0.5)",
+  },
+  library: {
+    fg: "#f8fafc",
+    muted: "#a8b2c3",
+    gradient:
+      "linear-gradient(182deg, #0c0a12 0%, #4c1d95 42%, #312e81 88%)",
+    accent: "#c4b5fd",
+    glow: "rgba(167, 139, 250, 0.48)",
+  },
+  discover: {
+    fg: "#f8fafc",
+    muted: "#94a3b8",
+    gradient:
+      "linear-gradient(165deg, #020617 0%, #0e7490 38%, #4338ca 95%)",
+    accent: "#7dd3fc",
+    glow: "rgba(56, 189, 248, 0.52)",
+  },
+  stats: {
+    fg: "#ecfdf5",
+    muted: "#a7c4bc",
+    gradient:
+      "linear-gradient(195deg, #022c22 0%, #0f172a 48%, #1e1b4b 100%)",
+    accent: "#6ee7b7",
+    glow: "rgba(52, 211, 153, 0.42)",
+  },
+  wrapped: {
+    fg: "#fdf4ff",
+    muted: "#e9d4ff",
+    gradient:
+      "linear-gradient(152deg, #1e1b4b 0%, #831843 45%, #4c1d95 100%)",
+    accent: "#f472b6",
+    glow: "rgba(244, 114, 182, 0.5)",
+  },
 };
+
+function themeFor(id: SlideId): Theme {
+  return SLIDE_THEMES[id];
+}
 
 const IMAGE_PATHS = [
   "/app-icon.png",
@@ -65,13 +123,90 @@ function img(path: string): string {
   return imageCache[path] || path;
 }
 
+/** Gradient + subtle “tech grid” + soft glows (reads well on App Store thumbnails). */
+function TechBackdrop({
+  theme,
+  children,
+}: {
+  theme: Theme;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        background: theme.gradient,
+      }}
+    >
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.13,
+          backgroundImage: `
+            linear-gradient(rgba(148,163,184,0.2) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148,163,184,0.2) 1px, transparent 1px)
+          `,
+          backgroundSize: "44px 44px",
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: "-18%",
+          right: "-10%",
+          width: "56%",
+          height: "42%",
+          background: `radial-gradient(ellipse farthest-corner, ${theme.glow} 0%, transparent 72%)`,
+          filter: "blur(52px)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          bottom: "-24%",
+          left: "-14%",
+          width: "62%",
+          height: "48%",
+          background:
+            "radial-gradient(ellipse farthest-corner, rgba(99,102,241,0.42) 0%, transparent 74%)",
+          filter: "blur(58px)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 44%, transparent 100%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div style={{ position: "relative", zIndex: 1, width: "100%", height: "100%" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function Phone({
   src,
   alt,
+  accent,
   style,
 }: {
   src: string;
   alt: string;
+  accent: string;
   style?: React.CSSProperties;
 }) {
   return (
@@ -81,9 +216,13 @@ function Phone({
           width: "100%",
           height: "100%",
           borderRadius: "14% / 7%",
-          background: "linear-gradient(160deg, #2a2a2e 0%, #18181b 100%)",
-          boxShadow:
-            "inset 0 0 0 1px rgba(255,255,255,0.08), 0 28px 64px rgba(0,0,0,0.5)",
+          background: "linear-gradient(155deg, #2d2d35 0%, #141416 55%, #0a0a0c 100%)",
+          boxShadow: `
+            inset 0 0 0 1px rgba(255,255,255,0.1),
+            0 32px 72px rgba(0,0,0,0.58),
+            0 0 0 1px rgba(255,255,255,0.04),
+            0 0 100px ${accent}33
+          `,
           position: "relative",
           overflow: "hidden",
         }}
@@ -164,6 +303,8 @@ function Caption({
           fontWeight: 700,
           lineHeight: 1.05,
           letterSpacing: "-0.03em",
+          textShadow:
+            "0 4px 32px rgba(0,0,0,0.65), 0 0 40px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.08)",
         }}
       >
         {headline}
@@ -171,14 +312,6 @@ function Caption({
     </div>
   );
 }
-
-type SlideId =
-  | "hero"
-  | "now"
-  | "library"
-  | "discover"
-  | "stats"
-  | "wrapped";
 
 type SlideDef = {
   id: SlideId;
@@ -274,26 +407,17 @@ function SlideCanvas({
   slide,
   cW,
   cH,
-  theme,
 }: {
   slide: SlideDef;
   cW: number;
   cH: number;
-  theme: Theme;
 }) {
+  const theme = themeFor(slide.id);
   const fw = phoneW(cW, cH) * 100;
 
   if (slide.variant === "hero") {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "relative",
-          background: theme.bg,
-          overflow: "hidden",
-        }}
-      >
+      <TechBackdrop theme={theme}>
         <div
           style={{
             position: "absolute",
@@ -307,6 +431,7 @@ function SlideCanvas({
         <Phone
           src={slide.screenshot}
           alt={slide.id}
+          accent={theme.accent}
           style={{
             position: "absolute",
             bottom: 0,
@@ -315,21 +440,13 @@ function SlideCanvas({
             transform: "translateX(-50%) translateY(11%)",
           }}
         />
-      </div>
+      </TechBackdrop>
     );
   }
 
   if (slide.variant === "feature-a") {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "relative",
-          background: theme.bg,
-          overflow: "hidden",
-        }}
-      >
+      <TechBackdrop theme={theme}>
         <div
           style={{
             position: "absolute",
@@ -343,6 +460,7 @@ function SlideCanvas({
         <Phone
           src={slide.screenshot}
           alt={slide.id}
+          accent={theme.accent}
           style={{
             position: "absolute",
             bottom: "-2%",
@@ -351,20 +469,12 @@ function SlideCanvas({
             transform: "translateY(8%)",
           }}
         />
-      </div>
+      </TechBackdrop>
     );
   }
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        position: "relative",
-        background: theme.bg,
-        overflow: "hidden",
-      }}
-    >
+    <TechBackdrop theme={theme}>
       <div
         style={{
           position: "absolute",
@@ -378,6 +488,7 @@ function SlideCanvas({
       <Phone
         src={slide.screenshot}
         alt={slide.id}
+        accent={theme.accent}
         style={{
           position: "absolute",
           top: cH * 0.08,
@@ -386,7 +497,7 @@ function SlideCanvas({
           transform: "translateX(-50%)",
         }}
       />
-    </div>
+    </TechBackdrop>
   );
 }
 
@@ -542,7 +653,7 @@ export default function ScreenshotsPage() {
                   transformOrigin: "top left",
                 }}
               >
-                <SlideCanvas slide={slide} cW={W} cH={H} theme={THEME} />
+                <SlideCanvas slide={slide} cW={W} cH={H} />
               </div>
             </div>
             <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: "#475569" }}>
@@ -562,7 +673,7 @@ export default function ScreenshotsPage() {
             }}
             style={{ width: W, height: H }}
           >
-            <SlideCanvas slide={slide} cW={W} cH={H} theme={THEME} />
+            <SlideCanvas slide={slide} cW={W} cH={H} />
           </div>
         ))}
       </div>
