@@ -7,11 +7,11 @@ This workspace includes **[ParthJadhav/app-store-screenshots](https://github.com
 ## What lives where
 
 
-| Path                                    | Purpose                                                                                                                                                                        |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `**generators/app-store-screenshots/**` | Upstream **skill** (MIT). Read `README.md` inside for install and prompts. Update with `**git submodule update --remote`**.                                                    |
-| `generators/screenshot-studio/`     | **Next.js screenshot app** (scaffolded). Run `npm run dev` inside; see `generators/screenshot-studio/README.md`. |
-| `**content/media/renders/`**            | Drop **exported PNGs** here for Git hosting + Buffer raw URLs (or use another host).                                                                                           |
+| Path                                    | Purpose                                                                                                                     |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `**generators/app-store-screenshots/`** | Upstream **skill** (MIT). Read `README.md` inside for install and prompts. Update with `**git submodule update --remote`**. |
+| `generators/screenshot-studio/`         | **Next.js screenshot app** (scaffolded). Run `npm run dev` inside; see `generators/screenshot-studio/README.md`.            |
+| `**content/media/renders/`**            | Drop **exported PNGs** here for Git hosting + Buffer raw URLs (or use another host).                                        |
 
 
 ---
@@ -42,7 +42,7 @@ npx skills add ./generators/app-store-screenshots
 
 ## Run the Next.js generator (in this monorepo)
 
-**Status:** `generators/screenshot-studio/` is a working **Next.js** + **html-to-image** app with **six** GameTime slides; copy follows **`docs/GAMETIME.md`** (no fake metrics, no “350k” line).
+**Status:** `generators/screenshot-studio/` is a working **Next.js** + **html-to-image** app with **six** GameTime slides; copy follows `**docs/GAMETIME.md`** (no fake metrics, no “350k” line).
 
 ```bash
 cd generators/screenshot-studio
@@ -50,7 +50,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Replace **`public/screenshots/*.png`** with real **6.1"** Simulator captures and **`public/app-icon.png`** with your icon. Use **Export all PNGs**, then copy files to **`content/media/renders/`**.
+Open [http://localhost:3000](http://localhost:3000). Replace `**public/screenshots/*.png**` with real **6.1"** Simulator captures and `**public/app-icon.png`** with your icon. Use **Export all PNGs**, then copy files to `**content/media/renders/`**.
 
 To **re-scaffold** from the upstream skill only, install the skill (`npx skills add …`) and let Cursor regenerate—or edit `src/app/page.tsx` in place.
 
