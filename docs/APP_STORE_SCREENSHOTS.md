@@ -11,8 +11,20 @@ This workspace includes **[ParthJadhav/app-store-screenshots](https://github.com
 | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `**generators/app-store-screenshots/`** | Upstream **skill** (MIT). Read `README.md` inside for install and prompts. Update with `**git submodule update --remote`**. |
 | `generators/screenshot-studio/`         | **Next.js screenshot app** (scaffolded). Run `npm run dev` inside; see `generators/screenshot-studio/README.md`.            |
-| `**content/media/renders/`**            | Drop **exported PNGs** here for Git hosting + Buffer raw URLs (or use another host).                                        |
+| `**content/media/renders/`**            | Drop **exported PNGs** here for Git hosting + Buffer raw URLs (or use another host). Use **per-app subfolders** if you like (see below). |
 
+
+---
+
+### `content/media/renders/` — per-app folders (optional)
+
+You can separate assets by product, for example:
+
+- `content/media/renders/gametime/`
+- `content/media/renders/tunescroll/`
+- `content/media/renders/babyTalk/`
+
+Nothing in the repo requires a flat `renders/` directory. **GitHub raw URLs** simply include the folder path, e.g. `.../content/media/renders/gametime/01-badges-en-1320x2868.png`. Use that full URL in Buffer or n8n.
 
 ---
 
@@ -50,7 +62,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Replace `**public/screenshots/*.png**` with real **6.1"** Simulator captures and `**public/app-icon.png`** with your icon. Use **Export all PNGs**, then copy files to `**content/media/renders/`**.
+Open [http://localhost:3000](http://localhost:3000). Replace `**public/screenshots/*.png**` with real **6.1"** Simulator captures and `**public/app-icon.png`** with your icon. Use **Export all PNGs**, then copy files to `**content/media/renders/<app>/`** (e.g. `gametime/`) or directly under `**content/media/renders/`** if you prefer a flat folder.
 
 To **re-scaffold** from the upstream skill only, install the skill (`npx skills add …`) and let Cursor regenerate—or edit `src/app/page.tsx` in place.
 
@@ -58,7 +70,7 @@ To **re-scaffold** from the upstream skill only, install the skill (`npx skills 
 
 ## Feeding Buffer
 
-1. **Public URL:** Push `content/media/renders/*.png` to **this** GitHub repo (or another public bucket). Use **raw** URLs in Buffer’s API (`docs/BUFFER_AUTOMATION.md`).
+1. **Public URL:** Push `content/media/renders/**/*.png` (including under per-app folders) to **this** GitHub repo (or another public bucket). Use **raw** URLs in Buffer’s API (`docs/BUFFER_AUTOMATION.md`).
 2. **Manual:** Upload the same files in the Buffer composer—no URL needed.
 
 **Claims:** All on-image copy must still match `**docs/GAMETIME.md`**.
