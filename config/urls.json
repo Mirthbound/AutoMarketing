@@ -1,0 +1,10 @@
+{
+  "company_display_name": "Mirthbound Apps",
+  "legal_entity_note": "PLACEHOLDER: Confirm legal name (e.g., Mirthbound Interactive, LLC) on contracts and App Store developer record.",
+  "website": "PLACEHOLDER_HTTPS://mirthbound.example",
+  "gametime_app_store": "PLACEHOLDER_HTTPS://apps.apple.com/app/idPLACEHOLDER_GAMETIME",
+  "tunescroll_app_store": "PLACEHOLDER_HTTPS://apps.apple.com/app/idPLACEHOLDER_TUNESCROLL",
+  "primary_tt_handle": "@PLACEHOLDER_mirthbound",
+  "primary_ig_handle": "@PLACEHOLDER_mirthbound",
+  "notes": "Replace PLACEHOLDER_* with real URLs and handles. App Store links should use your actual app IDs from App Store Connect."
+}

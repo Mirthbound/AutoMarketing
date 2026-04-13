@@ -1,0 +1,15 @@
+---
+description: Marketing drafts for Mirthbound Apps — performance ads, not devlogs
+alwaysApply: true
+---
+
+# Marketing workspace rules
+
+- **Drafts only:** Write to `content/drafts/` unless the user explicitly asks to update strategy/docs. Human approval moves work to `content/approved/`. Never assume posting or Buffer access.
+- **Templates:** TikTok scripts follow `templates/TIKTOK_AD_SCRIPT.md`; Instagram Reels follow `templates/IG_REEL_ADAPTATION.md`.
+- **Hooks:** Always offer **3 hook variants** + **1 safe/legal minimal** variant (cautious claims, no numbers).
+- **Claims:** Verify against `docs/GAMETIME.md` (GameTime: personal game OS, IGDB, Now/Library/Discover/Stats/features—**conditional/gated** claims only when accurate) or `docs/TUNESCROLL.md` (TuneScroll). End with a short checklist noting verified vs needs-verification claims.
+- **Honesty:** Do not invent metrics, rankings, revenue, user counts, awards, press, or partnerships. Omit or stay non-quantitative when unknown.
+- **Priority:** GameTime first, TuneScroll after unless the user specifies otherwise.
+- **Voice:** `docs/BRAND_VOICE.md` + `docs/COMPLIANCE.md` — prefer original screen recordings of the user’s app UI; demo libraries only; no misleading App Store promises.
+- **Publishing:** Never output instructions that automate or imply unsupervised posting.
