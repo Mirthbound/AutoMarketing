@@ -39,6 +39,10 @@ Performance marketing workspace for **consumer iOS apps**: plan creative, draft 
 | `docs/COMPLIANCE.md` | App Store honesty, copyright, privacy |
 | `docs/BUFFER_WORKFLOW.md` | Buffer + TikTok Business setup, batching, repurposing |
 | `docs/BUFFER_AUTOMATION.md` | n8n → Buffer GraphQL API → queue/post (TikTok + IG); channel IDs |
+| `docs/SOCIAL_IMAGE_AUTOMATION.md` | Turn iOS screenshots into framed, social-ready images (templates vs code vs AI) |
+| `docs/APP_STORE_SCREENSHOTS.md` | **ParthJadhav skill** submodule + scaffold path + Buffer handoff |
+| `generators/app-store-screenshots/` | Git submodule: upstream [app-store-screenshots](https://github.com/ParthJadhav/app-store-screenshots) skill |
+| `generators/screenshot-studio/` | Where to generate the Next.js screenshot app (see doc above) |
 | `docs/N8N_VISION.md` | n8n: auto drafts → you submit; phases, workflows, credentials |
 | `docs/N8N_SETUP.md` | Step-by-step: OpenAI API key, n8n install, first workflow, Git wiring |
 | `docs/N8N_LOCAL_START.md` | **Quick start:** Docker on Mac, Manual Trigger, Execute—no schedules |
@@ -48,7 +52,7 @@ Performance marketing workspace for **consumer iOS apps**: plan creative, draft 
 | `config/urls.json` | Store links and handles (**placeholders** until verified) |
 | `content/calendar/` | Monthly planning files |
 | `content/drafts/` | All AI/raw drafts |
-| `content/media/` | Images for posts; **`content/media/presets/`** = reusable backgrounds (host publicly for Buffer URLs) |
+| `content/media/` | Images for posts; **`presets/`**, **`frames/`**; **`renders/`** = exported PNGs for Buffer URLs |
 | `content/approved/` | Your approved copy/scripts |
 | `content/published/` | Optional: what went live + dates (no fake numbers) |
 
