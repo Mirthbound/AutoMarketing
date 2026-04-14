@@ -36,7 +36,7 @@ Services merge **your screenshot URL or file** + **text variables** into a desig
 
 ## Approach A2 — [app-store-screenshots](https://github.com/ParthJadhav/app-store-screenshots) (Cursor / agent skill + Next.js)
 
-**Repo integration:** This AutoMarketing workspace vendors the skill as a **git submodule** and documents the full flow in **`docs/APP_STORE_SCREENSHOTS.md`** (`generators/app-store-screenshots/`, scaffold under `generators/screenshot-studio/`).
+**Repo integration:** This AutoMarketing workspace vendors the skill as a **git submodule** and documents the full flow in **`docs/APP_STORE_SCREENSHOTS.md`** (`generators/app-store-screenshots/`, per-app apps under `generators/screenshot-studio-gametime/` etc.).
 
 **What it is:** An installable **skill** for Cursor (and similar agents) that scaffolds a **Next.js** app: **advertisement-style** slides (not raw UI docs), **Tailwind**, **`html-to-image` PNG export**, built-in **`mockup.png`** iPhone frame, and **Apple App Store export sizes** (6.9" / 6.5" / 6.3" / 6.1"). See the repo README for `npx skills add ParthJadhav/app-store-screenshots`.
 

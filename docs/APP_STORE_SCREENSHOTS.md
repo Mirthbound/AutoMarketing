@@ -10,8 +10,9 @@ This workspace includes **[ParthJadhav/app-store-screenshots](https://github.com
 | Path                                    | Purpose                                                                                                                     |
 | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `**generators/app-store-screenshots/`** | Upstream **skill** (MIT). Read `README.md` inside for install and prompts. Update with `**git submodule update --remote`**. |
-| `generators/screenshot-studio/`         | **Next.js screenshot app** (scaffolded). Run `npm run dev` inside; see `generators/screenshot-studio/README.md`.            |
-| `**content/media/renders/`**            | Drop **exported PNGs** here for Git hosting + Buffer raw URLs (or use another host). Use **per-app subfolders** if you like (see below). |
+| `**generators/screenshot-studio-*/**`    | **Per-app Next.js** screenshot apps (GameTime, TuneScroll, babyTalk). Each has its own `README.md`. **Not** the old single `screenshot-studio/` app (see pointer `generators/screenshot-studio/README.md`). |
+| `**content/media/screenshots/<app>/`**  | **Raw** Simulator/device PNGs **inputs** (one folder per app). Symlinked into each generator as `public/screenshots`. See `content/media/screenshots/README.md`. |
+| `**content/media/renders/<app>/`**      | **Exported** framed PNGs for Git hosting + Buffer raw URLs (or use another host). Use **per-app subfolders** (see below). |
 
 
 ---
@@ -54,15 +55,23 @@ npx skills add ./generators/app-store-screenshots
 
 ## Run the Next.js generator (in this monorepo)
 
-**Status:** `generators/screenshot-studio/` is a working **Next.js** + **html-to-image** app with **six** GameTime slides; copy follows `**docs/GAMETIME.md`** (no fake metrics, no “350k” line).
+**GameTime** (six slides; copy follows `**docs/GAMETIME.md`** — no fake metrics, no “350k” line):
 
 ```bash
-cd generators/screenshot-studio
+cd generators/screenshot-studio-gametime
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Replace `**public/screenshots/*.png**` with real **6.1"** Simulator captures and `**public/app-icon.png`** with your icon. Use **Export all PNGs**, then copy files to `**content/media/renders/<app>/`** (e.g. `gametime/`) or directly under `**content/media/renders/`** if you prefer a flat folder.
+**TuneScroll** and **babyTalk** use **template** projects (two slides each out of the box). Edit `src/app/page.tsx` to add slides, themes, and filenames. Raw PNGs go in `content/media/screenshots/tunescroll/` and `content/media/screenshots/babyTalk/`.
+
+```bash
+cd generators/screenshot-studio-tunescroll   # or screenshot-studio-babyTalk
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). Drop/replace PNGs under **`content/media/screenshots/<app>/`** (filenames must match `IMAGE_PATHS` in that app’s `page.tsx`). Replace **`public/app-icon.png`** in that generator folder with the app’s icon. Use **Export all PNGs**, then copy files to **`content/media/renders/<app>/`** (e.g. `gametime/`) or directly under **`content/media/renders/`** if you prefer a flat folder.
 
 To **re-scaffold** from the upstream skill only, install the skill (`npx skills add …`) and let Cursor regenerate—or edit `src/app/page.tsx` in place.
 
@@ -73,7 +82,7 @@ To **re-scaffold** from the upstream skill only, install the skill (`npx skills 
 1. **Public URL:** Push `content/media/renders/**/*.png` (including under per-app folders) to **this** GitHub repo (or another public bucket). Use **raw** URLs in Buffer’s API (`docs/BUFFER_AUTOMATION.md`).
 2. **Manual:** Upload the same files in the Buffer composer—no URL needed.
 
-**Claims:** All on-image copy must still match `**docs/GAMETIME.md`**.
+**Claims:** GameTime on-image copy must still match `**docs/GAMETIME.md`**. Other apps: follow their own product-truth docs when you add them.
 
 ---
 
@@ -99,4 +108,4 @@ git submodule update --init --recursive
 
 ## License
 
-The submodule is **MIT** (see `generators/app-store-screenshots/LICENSE`). Your generated `screenshot-studio/` code is yours; keep upstream notices if you copy skill files.
+The submodule is **MIT** (see `generators/app-store-screenshots/LICENSE`). Your generated `screenshot-studio-*` code is yours; keep upstream notices if you copy skill files.

@@ -20,15 +20,9 @@ function phoneW(cW: number, cH: number, clamp = 0.84) {
   return Math.min(clamp, 0.72 * (cH / cW) * MK_RATIO);
 }
 
-type SlideId =
-  | "badges"
-  | "now"
-  | "library"
-  | "discover"
-  | "stats"
-  | "wrapped";
+type SlideId = "slide01" | "slide02" | "slide03" | "slide04";
 
-/** Tech / video games / modern — per-slide gradients + shared typography tokens */
+/** Edit themes + copy in this file; raw PNGs live in `content/media/screenshots/tunescroll/`. */
 type Theme = {
   fg: string;
   muted: string;
@@ -38,7 +32,7 @@ type Theme = {
 };
 
 const SLIDE_THEMES: Record<SlideId, Theme> = {
-  badges: {
+  slide01: {
     fg: "#f8fafc",
     muted: "#94a3b8",
     gradient:
@@ -46,7 +40,7 @@ const SLIDE_THEMES: Record<SlideId, Theme> = {
     accent: "#67e8f9",
     glow: "rgba(34, 211, 238, 0.55)",
   },
-  now: {
+  slide02: {
     fg: "#f8fafc",
     muted: "#94a3b8",
     gradient:
@@ -54,7 +48,7 @@ const SLIDE_THEMES: Record<SlideId, Theme> = {
     accent: "#2dd4bf",
     glow: "rgba(45, 212, 191, 0.5)",
   },
-  library: {
+  slide03: {
     fg: "#f8fafc",
     muted: "#a8b2c3",
     gradient:
@@ -62,29 +56,13 @@ const SLIDE_THEMES: Record<SlideId, Theme> = {
     accent: "#c4b5fd",
     glow: "rgba(167, 139, 250, 0.48)",
   },
-  discover: {
+  slide04: {
     fg: "#f8fafc",
     muted: "#94a3b8",
     gradient:
       "linear-gradient(165deg, #020617 0%, #0e7490 38%, #4338ca 95%)",
     accent: "#7dd3fc",
     glow: "rgba(56, 189, 248, 0.52)",
-  },
-  stats: {
-    fg: "#ecfdf5",
-    muted: "#a7c4bc",
-    gradient:
-      "linear-gradient(195deg, #022c22 0%, #0f172a 48%, #1e1b4b 100%)",
-    accent: "#6ee7b7",
-    glow: "rgba(52, 211, 153, 0.42)",
-  },
-  wrapped: {
-    fg: "#fdf4ff",
-    muted: "#e9d4ff",
-    gradient:
-      "linear-gradient(152deg, #1e1b4b 0%, #831843 45%, #4c1d95 100%)",
-    accent: "#f472b6",
-    glow: "rgba(244, 114, 182, 0.5)",
   },
 };
 
@@ -94,12 +72,10 @@ function themeFor(id: SlideId): Theme {
 
 const IMAGE_PATHS = [
   "/app-icon.png",
-  "/screenshots/badges.png",
-  "/screenshots/now.png",
-  "/screenshots/library.png",
-  "/screenshots/discover.png",
-  "/screenshots/stats.png",
-  "/screenshots/wrapped.png",
+  "/screenshots/intro.png",
+  "/screenshots/feed.png",
+  "/screenshots/liked.png",
+  "/screenshots/saved.png",
 ];
 
 const imageCache: Record<string, string> = {};
@@ -357,82 +333,56 @@ type SlideDef = {
 
 const SLIDES: SlideDef[] = [
   {
-    id: "badges",
-    label: "BADGES",
+    id: "slide01",
+    label: "INTRO",
     headline: (
       <>
-        Milestones you
+        Your sound,
         <br />
-        can wear.
+        one scroll.
       </>
     ),
-    screenshot: "/screenshots/badges.png",
+    screenshot: "/screenshots/intro.png",
     variant: "hero",
   },
   {
-    id: "now",
-    label: "NOW",
+    id: "slide02",
+    label: "FEED",
     headline: (
       <>
-        Pick what
+        Discover
         <br />
-        plays next.
+        what&apos;s next.
       </>
     ),
-    screenshot: "/screenshots/now.png",
+    screenshot: "/screenshots/feed.png",
     variant: "feature-a",
   },
   {
-    id: "library",
-    label: "LIBRARY",
+    id: "slide03",
+    label: "LIKED",
     headline: (
       <>
-        Seven lists.
+        Tracks you
         <br />
-        Zero chaos.
+        can&apos;t quit.
       </>
     ),
-    screenshot: "/screenshots/library.png",
+    screenshot: "/screenshots/liked.png",
     variant: "feature-b",
   },
   {
-    id: "discover",
-    label: "DISCOVER",
+    id: "slide04",
+    label: "SAVED",
     headline: (
       <>
-        Browse a huge
+        Keep every
         <br />
-        game catalog.
+        find.
       </>
     ),
-    screenshot: "/screenshots/discover.png",
+    screenshot: "/screenshots/saved.png",
     variant: "feature-a",
-  },
-  {
-    id: "stats",
-    label: "STATS",
-    headline: (
-      <>
-        Know what
-        <br />
-        you finished.
-      </>
-    ),
-    screenshot: "/screenshots/stats.png",
-    variant: "feature-b",
-  },
-  {
-    id: "wrapped",
-    label: "YEAR IN GAMES",
-    headline: (
-      <>
-        Progress
-        <br />
-        you can feel.
-      </>
-    ),
-    screenshot: "/screenshots/wrapped.png",
-    variant: "hero",
   },
 ];
 
@@ -510,15 +460,16 @@ function SlideCanvas({
     );
   }
 
+  /** feature-b: phone top + caption bottom — symmetric horizontal inset avoids label clipping */
   return (
     <TechBackdrop theme={theme}>
       <AppIconMark cW={cW} accent={theme.accent} />
       <div
         style={{
           position: "absolute",
-          bottom: cH * 0.14,
-          left: cW * 0.07,
-          width: "78%",
+          bottom: cH * 0.19,
+          left: cW * 0.085,
+          right: cW * 0.085,
         }}
       >
         <Caption cW={cW} label={slide.label} headline={slide.headline} theme={theme} />
@@ -529,9 +480,9 @@ function SlideCanvas({
         accent={theme.accent}
         style={{
           position: "absolute",
-          top: cH * 0.08,
+          top: cH * 0.092,
           left: "50%",
-          width: `${fw * 0.88}%`,
+          width: `${fw * 0.835}%`,
           transform: "translateX(-50%)",
         }}
       />
@@ -615,7 +566,7 @@ export default function ScreenshotsPage() {
           flexWrap: "wrap",
         }}
       >
-        <span style={{ fontWeight: 700, fontSize: 15 }}>GameTime · App Store screenshots</span>
+        <span style={{ fontWeight: 700, fontSize: 15 }}>TuneScroll · App Store screenshots</span>
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <label style={{ fontSize: 13, color: "#475569" }}>
             Export size{" "}
@@ -658,9 +609,10 @@ export default function ScreenshotsPage() {
       </div>
 
       <p style={{ padding: "16px 20px", fontSize: 13, color: "#64748b", maxWidth: 720 }}>
-        Copy follows <code>docs/GAMETIME.md</code>. Replace <code>public/screenshots/*.png</code> with real
-        Simulator captures (6.1&quot;).         <code>public/app-icon.png</code> appears on <strong>every slide</strong> (top-right). If assets look missing: ensure files are <strong>fully downloaded</strong> (not
-        iCloud “cloud only”) so Next.js can read them from disk.
+        Raw captures go in <code>content/media/screenshots/tunescroll/</code> (symlinked as{" "}
+        <code>public/screenshots</code>). Edit <code>SLIDES</code> / filenames in this file. Add a product-truth
+        doc when ready (e.g. <code>docs/TUNESCROLL.md</code>). <code>public/app-icon.png</code> on{" "}
+        <strong>every slide</strong> (top-right). Ensure PNGs are fully on disk (not iCloud-only).
       </p>
 
       <div

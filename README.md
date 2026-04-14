@@ -42,7 +42,7 @@ Performance marketing workspace for **consumer iOS apps**: plan creative, draft 
 | `docs/SOCIAL_IMAGE_AUTOMATION.md` | Turn iOS screenshots into framed, social-ready images (templates vs code vs AI) |
 | `docs/APP_STORE_SCREENSHOTS.md` | **ParthJadhav skill** submodule + scaffold path + Buffer handoff |
 | `generators/app-store-screenshots/` | Git submodule: upstream [app-store-screenshots](https://github.com/ParthJadhav/app-store-screenshots) skill |
-| `generators/screenshot-studio/` | Where to generate the Next.js screenshot app (see doc above) |
+| `generators/screenshot-studio-*/` | Per-app Next.js screenshot apps (GameTime, TuneScroll, babyTalk); see `generators/screenshot-studio/README.md` |
 | `docs/N8N_VISION.md` | n8n: auto drafts → you submit; phases, workflows, credentials |
 | `docs/N8N_SETUP.md` | Step-by-step: OpenAI API key, n8n install, first workflow, Git wiring |
 | `docs/N8N_LOCAL_START.md` | **Quick start:** Docker on Mac, Manual Trigger, Execute—no schedules |

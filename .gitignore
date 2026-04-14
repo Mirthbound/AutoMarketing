@@ -3,7 +3,10 @@
 .env.*
 *.local
 
-# Next.js app (after scaffolding app-store-screenshots skill under generators/screenshot-studio/)
+# Next.js screenshot-studio-* apps (per app under generators/)
 generators/screenshot-studio/node_modules/
 generators/screenshot-studio/.next/
 generators/screenshot-studio/out/
+generators/screenshot-studio-*/node_modules/
+generators/screenshot-studio-*/.next/
+generators/screenshot-studio-*/out/
