@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toPng } from "html-to-image";
+import html2canvas from "html2canvas";
 
 /** Design at largest Apple iPhone App Store size; smaller sizes re-exported via size picker. */
 const W = 1320;
@@ -80,17 +80,73 @@ const IMAGE_PATHS = [
 
 const imageCache: Record<string, string> = {};
 
+/**
+ * html-to-image serializes the cloned DOM into an SVG, then loads it as a data URL. Very large
+ * `data:image/png;base64,...` attributes (common for tall Simulator PNGs) can exceed browser limits
+ * and rasterize as solid black inside the phone while the on-screen preview still looks fine.
+ */
+const MAX_RASTER_EXPORT_PX = 1600;
+
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+function loadHtmlImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("decode failed"));
+    image.src = src;
+  });
+}
+
+async function blobToExportDataUrl(blob: Blob): Promise<string> {
+  if (blob.type === "image/svg+xml") {
+    return blobToDataUrl(blob);
+  }
+  const objectUrl = URL.createObjectURL(blob);
+  try {
+    const image = await loadHtmlImage(objectUrl);
+    const nw = image.naturalWidth;
+    const nh = image.naturalHeight;
+    if (!nw || !nh) {
+      return blobToDataUrl(blob);
+    }
+    const maxSide = Math.max(nw, nh);
+    if (maxSide <= MAX_RASTER_EXPORT_PX) {
+      return blobToDataUrl(blob);
+    }
+    const scale = MAX_RASTER_EXPORT_PX / maxSide;
+    const tw = Math.round(nw * scale);
+    const th = Math.round(nh * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = tw;
+    canvas.height = th;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return blobToDataUrl(blob);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(image, 0, 0, tw, th);
+    return canvas.toDataURL("image/png");
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
 async function preloadAllImages() {
   await Promise.all(
     IMAGE_PATHS.map(async (path) => {
       const resp = await fetch(path);
+      if (!resp.ok) {
+        throw new Error(`${path} → HTTP ${resp.status}`);
+      }
       const blob = await resp.blob();
-      const dataUrl = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(blob);
-      });
-      imageCache[path] = dataUrl;
+      imageCache[path] = await blobToExportDataUrl(blob);
     }),
   );
 }
@@ -460,16 +516,20 @@ function SlideCanvas({
     );
   }
 
-  /** feature-b: phone top + caption bottom — symmetric horizontal inset avoids label clipping */
+  /**
+   * feature-b (TuneScroll · LIKED): slightly wider phone vs default; caption lower (less empty
+   * band under the headline); z-index so copy clears the device shadow.
+   */
   return (
     <TechBackdrop theme={theme}>
       <AppIconMark cW={cW} accent={theme.accent} />
       <div
         style={{
           position: "absolute",
-          bottom: cH * 0.19,
-          left: cW * 0.085,
-          right: cW * 0.085,
+          bottom: cH * 0.12,
+          left: cW * 0.09,
+          right: cW * 0.09,
+          zIndex: 2,
         }}
       >
         <Caption cW={cW} label={slide.label} headline={slide.headline} theme={theme} />
@@ -480,45 +540,118 @@ function SlideCanvas({
         accent={theme.accent}
         style={{
           position: "absolute",
-          top: cH * 0.092,
+          top: cH * 0.08,
           left: "50%",
-          width: `${fw * 0.835}%`,
+          width: `${fw * 0.865}%`,
           transform: "translateX(-50%)",
+          zIndex: 1,
         }}
       />
     </TechBackdrop>
   );
 }
 
-async function captureSlide(el: HTMLElement, w: number, h: number): Promise<string> {
-  const prev = { left: el.style.left, opacity: el.style.opacity, zIndex: el.style.zIndex };
+function resizePngDataUrl(dataUrl: string, outW: number, outH: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = outW;
+      c.height = outH;
+      const ctx = c.getContext("2d");
+      if (!ctx) {
+        reject(new Error("canvas 2d"));
+        return;
+      }
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, 0, 0, outW, outH);
+      resolve(c.toDataURL("image/png"));
+    };
+    img.onerror = () => reject(new Error("resize: image load failed"));
+    img.src = dataUrl;
+  });
+}
+
+async function captureSlide(el: HTMLElement, outW: number, outH: number): Promise<string> {
+  const prev = {
+    position: el.style.position,
+    left: el.style.left,
+    top: el.style.top,
+    transform: el.style.transform,
+    transformOrigin: el.style.transformOrigin,
+    opacity: el.style.opacity,
+    zIndex: el.style.zIndex,
+    width: el.style.width,
+    height: el.style.height,
+  };
+  el.style.position = "fixed";
   el.style.left = "0px";
+  el.style.top = "0px";
+  el.style.transform = "none";
+  el.style.transformOrigin = "top left";
   el.style.opacity = "1";
-  el.style.zIndex = "1";
-  const opts = { width: w, height: h, pixelRatio: 1, cacheBust: true };
-  await toPng(el, opts);
-  const dataUrl = await toPng(el, opts);
+  el.style.zIndex = "2147483647";
+  el.style.width = `${W}px`;
+  el.style.height = `${H}px`;
+  await new Promise<void>((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+  );
+  try {
+    if (document.fonts?.ready) await document.fonts.ready;
+  } catch {
+    /* ignore */
+  }
+
+  const canvas = await html2canvas(el, {
+    scale: 1,
+    width: W,
+    height: H,
+    windowWidth: W,
+    windowHeight: H,
+    scrollX: 0,
+    scrollY: 0,
+    useCORS: true,
+    allowTaint: false,
+    backgroundColor: null,
+    logging: false,
+  });
+
+  el.style.position = prev.position;
   el.style.left = prev.left;
+  el.style.top = prev.top;
+  el.style.transform = prev.transform;
+  el.style.transformOrigin = prev.transformOrigin;
   el.style.opacity = prev.opacity;
   el.style.zIndex = prev.zIndex;
-  return dataUrl;
+  el.style.width = prev.width;
+  el.style.height = prev.height;
+
+  const dataUrl = canvas.toDataURL("image/png");
+  if (outW === W && outH === H) return dataUrl;
+  return resizePngDataUrl(dataUrl, outW, outH);
 }
 
 export default function ScreenshotsPage() {
   const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [sizeIdx, setSizeIdx] = useState(0);
   const [exporting, setExporting] = useState<string | null>(null);
-  const exportRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const capturePreviewRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    preloadAllImages().then(() => setReady(true));
+    preloadAllImages()
+      .then(() => setReady(true))
+      .catch((e: unknown) => {
+        setLoadError(e instanceof Error ? e.message : String(e));
+      });
   }, []);
 
   const exportAll = useCallback(async () => {
     const size = IPHONE_SIZES[sizeIdx];
     for (let i = 0; i < SLIDES.length; i++) {
       setExporting(`${i + 1}/${SLIDES.length}`);
-      const el = exportRefs.current[i];
+      const el = capturePreviewRefs.current[i];
       if (!el) continue;
       const dataUrl = await captureSlide(el, size.w, size.h);
       const a = document.createElement("a");
@@ -529,6 +662,20 @@ export default function ScreenshotsPage() {
     }
     setExporting(null);
   }, [sizeIdx]);
+
+  if (loadError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-zinc-100 px-6 text-center text-zinc-800">
+        <p className="font-semibold">Could not load image assets</p>
+        <p className="max-w-lg text-sm text-zinc-600">{loadError}</p>
+        <p className="max-w-lg text-sm text-zinc-500">
+          Filenames must match <code className="rounded bg-zinc-200 px-1">SLIDES</code> in this file, under{" "}
+          <code className="rounded bg-zinc-200 px-1">public/screenshots</code> in the project you run{" "}
+          <code className="rounded bg-zinc-200 px-1">npm run dev</code> from.
+        </p>
+      </div>
+    );
+  }
 
   if (!ready) {
     return (
@@ -609,10 +756,10 @@ export default function ScreenshotsPage() {
       </div>
 
       <p style={{ padding: "16px 20px", fontSize: 13, color: "#64748b", maxWidth: 720 }}>
-        Raw captures go in <code>content/media/screenshots/tunescroll/</code> (symlinked as{" "}
-        <code>public/screenshots</code>). Edit <code>SLIDES</code> / filenames in this file. Add a product-truth
-        doc when ready (e.g. <code>docs/TUNESCROLL.md</code>). <code>public/app-icon.png</code> on{" "}
-        <strong>every slide</strong> (top-right). Ensure PNGs are fully on disk (not iCloud-only).
+        <code>public/screenshots</code> is a symlink to <code>content/media/screenshots/tunescroll/</code>. Edit{" "}
+        <code>SLIDES</code> / filenames here; use the same repo folder as your dev server. Add a product-truth doc
+        when ready (e.g. <code>docs/TUNESCROLL.md</code>). <code>public/app-icon.png</code> on every slide
+        (top-right). PNGs must be fully on disk (not iCloud-only placeholders).
       </p>
 
       <div
@@ -636,6 +783,9 @@ export default function ScreenshotsPage() {
               }}
             >
               <div
+                ref={(node) => {
+                  capturePreviewRefs.current[i] = node;
+                }}
                 style={{
                   width: W,
                   height: H,
@@ -649,21 +799,6 @@ export default function ScreenshotsPage() {
             <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: "#475569" }}>
               {String(i + 1).padStart(2, "0")} · {slide.id}
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Full-resolution nodes for html-to-image (design canvas W×H; toPng resizes to selected App Store size). */}
-      <div style={{ position: "absolute", left: -9999, top: 0, pointerEvents: "none" }}>
-        {SLIDES.map((slide, i) => (
-          <div
-            key={`export-${slide.id}`}
-            ref={(el) => {
-              exportRefs.current[i] = el;
-            }}
-            style={{ width: W, height: H }}
-          >
-            <SlideCanvas slide={slide} cW={W} cH={H} />
           </div>
         ))}
       </div>
